@@ -5,19 +5,21 @@ from snowflake.snowpark.functions import col
 # Write directly to the app
 st.title(f"Customize your Smoothie! :balloon: {st.__version__}")
 st.write(
-  """Choose the fruits you want in your custom Smoothie!
-  """
+    """Choose the fruits you want in your custom Smoothie!
+    """
 )
 
-import streamlit as st
-
+# Establish the connection
 cnx = st.connection("snowflake")
 session = cnx.session()
 
 name_on_order = st.text_input("Name on Smoothie")
 st.write("The name on your smoothie will be: ", name_on_order)
 
-session = get_active_session()
+# --- CORRECTED SECTION ---
+# The line 'session = get_active_session()' was removed. 
+# We already defined 'session' above using cnx.session()
+
 my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
 #st.dataframe(data=my_dataframe, use_container_width=True)
 
@@ -27,27 +29,19 @@ ingredients_list = st.multiselect(
     max_selections = 5
 )
 
-if ingredients_list: #is null , do not display anything. If not null, then do the following:
-    #st.write(ingredients_list)
-    #st.text(ingredients_list)
-
+if ingredients_list: 
     ingredients_string = ''
 
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ' '
 
-    st.write(ingredients_string)
+    # st.write(ingredients_string)
 
     my_insert_stmt = """ insert into smoothies.public.orders (INGREDIENTS, NAME_ON_ORDER)
             values ('""" + ingredients_string + """','""" + name_on_order + """')"""
-
-    #st.write(my_insert_stmt)
-    #st.stop()
 
     time_to_insert = st.button('Submit Order')
 
     if time_to_insert: 
         session.sql(my_insert_stmt).collect()
-
-        
         st.success('Your Smoothie is ordered!', icon="✅")
