@@ -21,8 +21,9 @@ st.write("The name on your smoothie will be: ", name_on_order)
 # The line 'session = get_active_session()' was removed. 
 # We already defined 'session' above using cnx.session()
 
-my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
-#st.dataframe(data=my_dataframe, use_container_width=True)
+my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME')).col('SEARCH_ON'))
+st.dataframe(data=my_dataframe, use_container_width=True)
+st.stop()
 
 ingredients_list = st.multiselect(
     "Choose up to 5 ingredients:",
